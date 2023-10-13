@@ -1,14 +1,14 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import { Core } from "./stacks/Core";
 
 export default {
   config(_input) {
     return {
       name: "hackathon-rugby-is-easy",
-      region: "us-east-1",
+      region: "eu-west-1",
     };
   },
   stacks(app) {
-    app.stack(API);
-  }
+    app.stack(Core);
+  },
 } satisfies SSTConfig;

@@ -7,7 +7,7 @@ const SK = "SK";
 const GSI1_PK = "GSI1_PK";
 const GSI1_SK = "GSI1_SK";
 
-export function API({ stack }: StackContext) {
+export function Core({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
     defaults: {
       retries: 10,
