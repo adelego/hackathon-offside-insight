@@ -50,6 +50,7 @@ export type GetQuestionOutput = {
     date: string;
   };
   questionTimestamp?: string;
+  signedUrl?: string;
 };
 
 export type ListQuestionResponsesOutput = {
@@ -62,5 +63,5 @@ export type UsersLeaderboardOutput = {
   users: {
     username: string;
     score: number;
-  }[]
+  }[];
 };

@@ -13,6 +13,12 @@ import { randomUUID } from "crypto";
 import { GetItemCommand, PutItemCommand } from "dynamodb-toolbox";
 import { ApiHandler } from "sst/node/api";
 import { Table } from "sst/node/table";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Bucket } from "sst/node/bucket";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const s3 = new S3Client({});
+const bucketName = Bucket.MediaBucket.bucketName;
 
 export const create = ApiHandler(async (_evt) => {
   const stringBody = _evt.body as string;
@@ -67,7 +73,17 @@ export const get = ApiHandler(async (_evt) => {
     };
   }
 
-  const reponse: GetQuestionOutput = question;
+  let signedUrl: string | undefined = undefined;
+  if (question.videoFilename !== undefined) {
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: question.videoFilename,
+    });
+
+    signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
+  }
+
+  const reponse: GetQuestionOutput = { ...question, signedUrl };
 
   return {
     statusCode: 200,
