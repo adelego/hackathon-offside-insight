@@ -15,9 +15,6 @@ export const handler = EventHandler(Events.ResponseUpdated, async (evt) => {
     throw new Error(`Response not found: ${responseId}`);
   }
 
-  if (responseItem.upvotes - responseItem.downvotes < 10) {
-    return;
-  }
 
   const { Item: questionItem } = await QuestionEntity.build(GetItemCommand).key({ questionId: responseItem.questionId }).send();
 
@@ -27,19 +24,30 @@ export const handler = EventHandler(Events.ResponseUpdated, async (evt) => {
 
   const { username, questionText, notified } = questionItem;
 
-  if (notified === true) {
-    return;
-  }
-
   const { Item: userItem } = await UserEntity.build(GetItemCommand).key({ username }).send();
 
   if (userItem === undefined) {
     throw new Error(`User not found: ${username}`);
   }
 
+  const { upvotes, previousUpvotes, downvotes, previousDownvotes } = evt.properties;
+
+  await UserEntity.build(UpdateItemCommand).item({
+    score: userItem.score + upvotes - previousUpvotes - downvotes + previousDownvotes,
+    username: responseItem.username,
+  }).send();
+
   const { userEmail } = userItem;
 
+  if (responseItem.upvotes - responseItem.downvotes < 10) {
+    return;
+  }
+
   if (userEmail === undefined) {
+    return;
+  }
+
+  if (notified === true) {
     return;
   }
 

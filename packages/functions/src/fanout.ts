@@ -7,10 +7,12 @@ export const handler = async ({ Records }: {
       NewImage: {
         PK: { S: string };
         SK: { S: string };
+        upvotes: { N: string };
+        downvotes: { N: string };
       };
-      OldImage: {
-        PK: { S: string };
-        SK: { S: string };
+      OldImage?: {
+        upvotes: { N: string };
+        downvotes: { N: string };
       };
     };
   }[]
@@ -22,12 +24,16 @@ export const handler = async ({ Records }: {
       return;
     }
 
-    const { NewImage } = dynamodb;
+    const { NewImage, OldImage } = dynamodb;
 
     switch (NewImage.PK.S) {
       case 'Response': {
         await Events.ResponseUpdated.publish({
           responseId: NewImage.SK.S,
+          upvotes: +NewImage.upvotes.N,
+          previousUpvotes: OldImage === undefined ? 0 : +OldImage.upvotes.N,
+          downvotes: +NewImage.downvotes.N,
+          previousDownvotes: OldImage === undefined ? 0 : +OldImage.downvotes.N,
         });
         break;
       }

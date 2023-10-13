@@ -80,6 +80,7 @@ export function Core({ stack }: StackContext) {
       "POST /responses": "packages/functions/src/responses.create",
       "GET /responses/{questionId}": "packages/functions/src/responses.list",
       "POST /medias/upload-url": "packages/functions/src/medias.getUploadUrl",
+      "GET /users/leaderboard": "packages/functions/src/users.leaderboard",
     },
   });
 

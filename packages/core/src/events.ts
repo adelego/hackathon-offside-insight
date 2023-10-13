@@ -8,5 +8,9 @@ export const event = createEventBuilder({
 export const Events = {
   ResponseUpdated: event("response.updated", {
     responseId: z.string(),
+    upvotes: z.number(),
+    previousUpvotes: z.number(),
+    downvotes: z.number(),
+    previousDownvotes: z.number(),
   }),
 };

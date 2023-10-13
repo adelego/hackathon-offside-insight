@@ -36,6 +36,7 @@ export const UserEntity = new EntityV2({
     username: string().key().savedAs("SK"),
     sessionId: string().required(),
     userEmail: string().optional(),
+    score: number().required(),
   }),
 });
 
@@ -70,5 +71,6 @@ export const ResponseEntity = new EntityV2({
     responseText: string().required(),
     upvotes: number().default(0),
     downvotes: number().default(0),
+    username: string().required(),
   }),
 });

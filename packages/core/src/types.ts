@@ -33,6 +33,7 @@ export type ListUserQuestionsOutput = {
 export type PostResponseInput = {
   questionId: string;
   responseText: string;
+  username: string;
 };
 
 export type PostResponseOutput = {
@@ -56,3 +57,10 @@ export type ListQuestionResponsesOutput = {
 };
 
 export type PostMediaInput = {};
+
+export type UsersLeaderboardOutput = {
+  users: {
+    username: string;
+    score: number;
+  }[]
+};
