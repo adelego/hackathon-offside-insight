@@ -31,9 +31,7 @@ export function Home() {
         [userName, email],
         false
       );
-      console.log(response);
       const userSession = await response.json();
-      console.log(userSession);
       localStorage.setItem("userSession", userSession);
       return true;
     },
@@ -43,9 +41,7 @@ export function Home() {
   useEffect(() => {
     console.log({ loggedIn });
     if (loggedIn.value && loggedIn.loading === false) {
-      console.log("redirecting in 3, 2, 1");
       setTimeout(() => {
-        console.log("bye");
         window.location.href = "/help";
       }, 1500);
     }
