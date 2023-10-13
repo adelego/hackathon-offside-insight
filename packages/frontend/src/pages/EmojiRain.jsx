@@ -4,19 +4,40 @@ export const EmojiRain = () => {
   const [emojis, setEmojis] = useState([]);
 
   useEffect(() => {
-    const generateEmoji = () => ({
-      id: Math.random(),
-      left: Math.random() * 100,
-      animationDuration: 4 + Math.random() * 5, // shorter duration, smooth flow
-      fontSize: 20 + Math.random() * 30,
-    });
+    // Add a list of emojis from which to randomly select
+    const emojiList = ["🏉", "🤌", "🍻"];
 
-    const generateEmojis = () => {
-      const newEmoji = generateEmoji();
-      setEmojis((prevEmojis) => [...prevEmojis, newEmoji]);
+    const generateEmoji = () => {
+      let chosenEmoji;
+    
+      // Generate a random number between 0 and 100
+      const randomNum = Math.random() * 100;
+    
+      // Assign emojis based on the probability distribution
+      if (randomNum < 70) {
+        chosenEmoji = emojiList[0]; // 70% probability for 🏉
+      } else if (randomNum < 85) {
+        chosenEmoji = emojiList[1]; // 15% probability for 🚗
+      } else {
+        chosenEmoji = emojiList[2]; // 15% probability for 🚀
+      }
+    
+      return {
+        id: Math.random(),
+        left: Math.random() * 100,
+        animationDuration: 6 + Math.random() * 5,
+        fontSize: 20 + Math.random() * 30,
+        emoji: chosenEmoji,
+      };
     };
 
-    // Clean up emojis that are out of view
+    const generateEmojis = () => {
+      if (document.visibilityState === 'visible') {
+        const newEmoji = generateEmoji();
+        setEmojis((prevEmojis) => [...prevEmojis, newEmoji]);
+      }
+    };
+
     const cleanUpEmojis = () => {
       setEmojis((prevEmojis) =>
         prevEmojis.filter(
@@ -26,6 +47,7 @@ export const EmojiRain = () => {
         )
       );
     };
+
 
     const emojiInterval = setInterval(generateEmojis, 1000); // Generate new emoji every 0.5 second
     const cleanUpInterval = setInterval(cleanUpEmojis, 4000); // Clean up emojis every 2 seconds
@@ -38,10 +60,10 @@ export const EmojiRain = () => {
 
   return (
     <>
-      {emojis.map(({ id, left, animationDuration, fontSize }) => (
+      {emojis.map(({ id, left, animationDuration, fontSize, emoji }) => (
         <span
           key={id}
-          id={id}
+          id={id.toString()}  // Ensure id is a string to avoid React warnings
           className="absolute animate-spin"
           style={{
             left: `${left}vw`,
@@ -52,7 +74,7 @@ export const EmojiRain = () => {
             animationTimingFunction: "linear",
           }}
         >
-          🏉
+          {emoji}
         </span>
       ))}
       <style jsx>{`

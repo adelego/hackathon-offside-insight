@@ -116,7 +116,7 @@ export function QuestionFeed() {
   return (
     <div className="min-h-screen flex flex-col flex-top align-top bg-gray-100 p-20">
        {!question.loading && (
-                <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-blue-600 rounded-md bg-white mb-5">
+                <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-green-600 rounded-md bg-white mb-5">
                     <p className="text-sm">🤔 {question.value.username} demande :</p>
                     <p className="self-center">{question.value.questionText}</p>
                     {question.value.signedUrl && (
@@ -151,7 +151,7 @@ export function QuestionFeed() {
       {responses.map((response, key) => (
         <div
           key={key}
-          className="flex flex-col w-300px h-max p-10 border-solid border-2 border-blue-400 rounded-md bg-white mb-5"
+          className="flex flex-col w-300px h-max p-10 border-solid border-2 border-green-400 rounded-md bg-white mb-5"
         >
           <p className="text-sm">
             💁 {response.username || "anonyme"} répond :
@@ -178,7 +178,7 @@ export function QuestionFeed() {
           onChange={onAnswerChange}
         ></textarea>
         <button
-          className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600"
           onClick={submit}
         >
           Envoyer 💌
