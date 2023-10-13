@@ -4,8 +4,16 @@ export type PostUserInput = {
 };
 
 export type PostUserOutput = {
-  userId: string;
   username: string;
   sessionId: string;
   userEmail?: string;
+};
+
+export type PostQuestionInput = {
+  username: string;
+};
+
+export type PostQuestionOutput = {
+  username: string;
+  questionId: string;
 };

@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { EntityV2, schema, string } from "dynamodb-toolbox";
+import { EntityV2, schema, string, ComputedDefault } from "dynamodb-toolbox";
 
 import { TableV2 } from "dynamodb-toolbox";
 import { Table } from "sst/node/table";
@@ -26,9 +26,24 @@ export const UserEntity = new EntityV2({
   table,
   schema: schema({
     PK: string().key().default("User"),
-    userId: string().key().savedAs("SK"),
+    username: string().key().savedAs("SK"),
     sessionId: string().required(),
-    username: string().required(),
     userEmail: string().optional(),
   }),
+});
+
+export const QuestionEntity = new EntityV2({
+  name: "Question",
+  table,
+  schema: schema({
+    PK: string().key().default("Question"),
+    SK: string().key().default(ComputedDefault),
+    username: string().required(),
+    questionId: string().required(),
+  }),
+  //@ts-ignore
+  putDefaults: {
+    //@ts-ignore
+    SK: ({ username, questionId }) => `${username}#${questionId}`,
+  },
 });
