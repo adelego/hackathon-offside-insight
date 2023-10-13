@@ -72,7 +72,10 @@ export function QuestionFeed() {
   const getUpvoteFn = (response, responseKey) => {
     return (event) => {
       event.preventDefault();
-      const id = (response.SF && response.SK.S) || response.responseId;
+      const id =
+        response.SK !== undefined && response.SK.S !== undefined
+          ? response.SK.S
+          : response.responseId;
 
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       console.log(`Upvoting response ${id} by ${userSession.username}`);
@@ -95,7 +98,7 @@ export function QuestionFeed() {
   const getDownvoteFn = (response, responseKey) => {
     return (event) => {
       event.preventDefault();
-      const id = (response.SF && response.SK.S) || response.responseId;
+      const id = (response.SK && response.SK.S) || response.responseId;
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       console.log(`Downvote response ${id} by ${userSession.username}`);
       fetch(`${process.env.REACT_APP_API_URL}/responses/${id}/downvote`, {
