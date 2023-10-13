@@ -15,27 +15,23 @@ export function Home() {
     async (event) => {
       event.preventDefault();
       console.log({ email, userName, url: process.env.REACT_APP_API_URL });
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          method: "POST",
-          body: JSON.stringify({
-            username: userName,
-            userEmail: email,
-          }),
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
+        headers: {
+          "Content-Type": "application/json",
         },
-        [userName, email],
-        false
-      );
+
+        method: "POST",
+        body: JSON.stringify({
+          username: userName,
+          userEmail: email,
+        }),
+      });
       const userSession = await response.json();
-      localStorage.setItem("userSession", userSession);
+      localStorage.setItem("userSession", JSON.stringify(userSession));
       return true;
     },
-    [userName, email]
+    [userName, email],
+    false
   );
 
   useEffect(() => {
