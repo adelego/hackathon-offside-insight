@@ -2,10 +2,15 @@ import {
   QuestionEntity,
   UserEntity,
 } from "@hackathon-rugby-is-easy/core/entities";
-import { PostQuestionInput } from "@hackathon-rugby-is-easy/core/types";
+import {
+  ListUserQuestionsInput,
+  PostQuestionInput,
+} from "@hackathon-rugby-is-easy/core/types";
 import { randomUUID } from "crypto";
 import { GetItemCommand, PutItemCommand } from "dynamodb-toolbox";
 import { ApiHandler } from "sst/node/api";
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { Table } from "sst/node/table";
 
 export const create = ApiHandler(async (_evt) => {
   const stringBody = _evt.body as string;
@@ -43,6 +48,25 @@ export const create = ApiHandler(async (_evt) => {
   };
 });
 
+const dynamodbClient = new DynamoDBClient({});
+
 export const list = ApiHandler(async (_evt) => {
-  const stringBody = _evt.body as string;
+  const { username } = _evt.pathParameters as { username: string };
+
+  const command = new QueryCommand({
+    IndexName: "GSI1",
+    TableName: Table.Table.tableName,
+    ExpressionAttributeValues: {
+      ":pk": { S: "Question" },
+      ":sk": { S: username },
+    },
+    KeyConditionExpression: "GSI1_PK = :pk AND GSI1_SK = :sk",
+  });
+
+  const { Items: questions } = await dynamodbClient.send(command);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ questions }),
+  };
 });
