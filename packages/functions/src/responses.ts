@@ -9,7 +9,7 @@ import {
   PostResponseOutput,
 } from "@hackathon-rugby-is-easy/core/types";
 import { randomUUID } from "crypto";
-import { GetItemCommand, PutItemCommand } from "dynamodb-toolbox";
+import { $add, GetItemCommand, PutItemCommand, UpdateItemCommand } from "dynamodb-toolbox";
 import { ApiHandler } from "sst/node/api";
 import { Table } from "sst/node/table";
 
@@ -77,4 +77,22 @@ export const list = ApiHandler(async (_evt) => {
     statusCode: 200,
     body: JSON.stringify(response),
   };
+});
+
+export const upvote = ApiHandler(async (_evt) => {
+  const { responseId } = _evt.pathParameters as { responseId: string };
+
+  await ResponseEntity.build(UpdateItemCommand).item({
+    responseId,
+    upvotes: $add(1),
+  }).send();
+});
+
+export const downvote = ApiHandler(async (_evt) => {
+  const { responseId } = _evt.pathParameters as { responseId: string };
+
+  await ResponseEntity.build(UpdateItemCommand).item({
+    responseId,
+    downvotes: $add(1),
+  }).send();
 });

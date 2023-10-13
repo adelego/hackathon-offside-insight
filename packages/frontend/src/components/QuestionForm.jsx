@@ -53,7 +53,7 @@ export function QuestionForm() {
 
   const [newQuestion, submit] = useAsyncFn(
     async (event) => {
-      let videoFileName = null;
+      let videoFilename = null;
       event.preventDefault();
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       const selectedGame = GAMES.find(
@@ -62,8 +62,9 @@ export function QuestionForm() {
 
       if (videoFile) {
         const { uploadUrl, fileName } = await getUploadUrl();
+        console.log({ uploadUrl, fileName });
         await uploadVideoToS3(videoFile, uploadUrl);
-        videoFileName = fileName;
+        videoFilename = fileName;
         // Add additional logic if you need to associate the video with the question
       }
 
@@ -80,7 +81,7 @@ export function QuestionForm() {
             questionText: question,
             questionTimestamp: timestamp.toString(),
             matchDetails: selectedGame,
-            videoFileName,
+            videoFilename,
           }),
         },
         [],

@@ -81,6 +81,8 @@ export function Core({ stack }: StackContext) {
       "GET /responses/{questionId}": "packages/functions/src/responses.list",
       "POST /medias/upload-url": "packages/functions/src/medias.getUploadUrl",
       "GET /users/leaderboard": "packages/functions/src/users.leaderboard",
+      "POST /responses/{responseId}/upvote": "packages/functions/src/responses.upvote",
+      "POST /responses/{responseId}/downvote": "packages/functions/src/responses.downvote",
     },
   });
 
