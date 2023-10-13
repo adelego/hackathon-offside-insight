@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { EntityV2, map, schema, string } from "dynamodb-toolbox";
+import { EntityV2, map, number, schema, string } from "dynamodb-toolbox";
 
 import { TableV2 } from "dynamodb-toolbox";
 import { Table } from "sst/node/table";
@@ -50,7 +50,16 @@ export const QuestionEntity = new EntityV2({
   }),
 });
 
-// export const ReplyEntity = new EntityV2({
-//   name: "Reply",
-//   table,
-// });
+export const ResponseEntity = new EntityV2({
+  name: "Response",
+  table,
+  schema: schema({
+    PK: string().key().default("Response"),
+    responseId: string().key().savedAs("SK"),
+    GSI1_PK: string().default("Response"),
+    questionId: string().required().savedAs("GSI1_SK"),
+    responseText: string().required(),
+    upvotes: number().default(0),
+    downvotes: number().default(0),
+  }),
+});

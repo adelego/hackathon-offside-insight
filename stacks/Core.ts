@@ -5,6 +5,7 @@ import {
   StaticSite,
   Table,
   Function,
+  Bucket,
 } from "sst/constructs";
 import { BillingMode } from "aws-cdk-lib/aws-dynamodb";
 import { StartingPosition } from "aws-cdk-lib/aws-lambda";
@@ -21,6 +22,8 @@ export function Core({ stack }: StackContext) {
       retries: 10,
     },
   });
+
+  const mediaBucket = new Bucket(stack, "MediaBucket");
 
   const table = new Table(stack, "Table", {
     fields: {
@@ -50,13 +53,17 @@ export function Core({ stack }: StackContext) {
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [bus, table],
+        bind: [bus, table, mediaBucket],
       },
     },
     routes: {
       "POST /users": "packages/functions/src/users.create",
       "POST /questions": "packages/functions/src/questions.create",
       "GET /questions/{username}": "packages/functions/src/questions.list",
+      "POST /responses": "packages/functions/src/responses.create",
+      "GET /responses/{questionId}":
+        "packages/functions/src/responses.listForQuestion",
+      "POST /medias/upload-url": "packages/functions/src/medias.getUploadUrl",
     },
   });
 

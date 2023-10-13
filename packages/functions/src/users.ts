@@ -1,5 +1,8 @@
 import { UserEntity } from "@hackathon-rugby-is-easy/core/entities";
-import { PostUserInput } from "@hackathon-rugby-is-easy/core/types";
+import {
+  PostUserInput,
+  PostUserOutput,
+} from "@hackathon-rugby-is-easy/core/types";
 import { randomUUID } from "crypto";
 import { PutItemCommand } from "dynamodb-toolbox";
 import { ApiHandler } from "sst/node/api";
@@ -35,10 +38,13 @@ export const create = ApiHandler(async (_evt) => {
         body: JSON.stringify("User already exists"),
       };
     }
+    throw e;
   }
+
+  const response: PostUserOutput = createdUser;
 
   return {
     statusCode: 200,
-    body: JSON.stringify(createdUser),
+    body: JSON.stringify(response),
   };
 });

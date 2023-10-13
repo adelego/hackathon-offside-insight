@@ -1,12 +1,12 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import {
   QuestionEntity,
-  UserEntity,
+  ResponseEntity,
 } from "@hackathon-rugby-is-easy/core/entities";
 import {
-  ListUserQuestionsOutput,
-  PostQuestionInput,
-  PostQuestionOutput,
+  ListQuestionResponsesOutput,
+  PostResponseInput,
+  PostResponseOutput,
 } from "@hackathon-rugby-is-easy/core/types";
 import { randomUUID } from "crypto";
 import { GetItemCommand, PutItemCommand } from "dynamodb-toolbox";
@@ -15,60 +15,63 @@ import { Table } from "sst/node/table";
 
 export const create = ApiHandler(async (_evt) => {
   const stringBody = _evt.body as string;
-  const postUserInput = JSON.parse(stringBody) as PostQuestionInput;
+  const postResponseInput = JSON.parse(stringBody) as PostResponseInput;
 
-  const username = postUserInput.username;
+  const { questionId } = postResponseInput;
 
-  const { Item: user } = await UserEntity.build(GetItemCommand)
-    .key({ username })
+  const { Item: question } = await QuestionEntity.build(GetItemCommand)
+    .key({
+      questionId,
+    })
     .send();
 
-  if (user === undefined) {
+  if (question === undefined) {
     return {
       statusCode: 400,
-      body: JSON.stringify(`User ${username} does not exist`),
+      body: JSON.stringify(`Question ${questionId} does not exist`),
     };
   }
 
-  const questionId = randomUUID();
+  const responseId = randomUUID();
 
-  const createdQuestion = {
-    ...postUserInput,
-    questionId,
+  const createdResponse = {
+    ...postResponseInput,
+    responseId,
   };
 
   try {
-    await QuestionEntity.build(PutItemCommand).item(createdQuestion).send();
+    await ResponseEntity.build(PutItemCommand).item(createdResponse).send();
   } catch (e: any) {
+    // todo implement error handling
     throw e;
   }
 
-  const reponse: PostQuestionOutput = createdQuestion;
+  const response: PostResponseOutput = createdResponse;
 
   return {
     statusCode: 200,
-    body: JSON.stringify(reponse),
+    body: JSON.stringify(response),
   };
 });
 
 const dynamodbClient = new DynamoDBClient({});
 
 export const list = ApiHandler(async (_evt) => {
-  const { username } = _evt.pathParameters as { username: string };
+  const { questionId } = _evt.pathParameters as { questionId: string };
 
   const command = new QueryCommand({
     IndexName: "GSI1",
     TableName: Table.Table.tableName,
     ExpressionAttributeValues: {
-      ":pk": { S: "Question" },
-      ":sk": { S: username },
+      ":pk": { S: "Response" },
+      ":sk": { S: questionId },
     },
     KeyConditionExpression: "GSI1_PK = :pk AND GSI1_SK = :sk",
   });
 
-  const { Items: questions = [] } = await dynamodbClient.send(command);
+  const { Items: responses = [] } = await dynamodbClient.send(command);
 
-  const response: ListUserQuestionsOutput = { questions };
+  const response: ListQuestionResponsesOutput = { responses };
 
   return {
     statusCode: 200,

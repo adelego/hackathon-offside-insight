@@ -17,6 +17,7 @@
   "dependencies": {
     "dynamodb-toolbox": "v1.0.0-alpha.20231012",
     "@aws-sdk/client-ses": "^3.428.0",
-    "@aws-sdk/client-dynamodb": "^3.428.0"
+    "@aws-sdk/client-dynamodb": "^3.428.0",
+    "@aws-sdk/client-s3": "^3.428.0"
   }
 }

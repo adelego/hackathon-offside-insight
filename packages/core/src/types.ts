@@ -25,10 +25,20 @@ export type PostQuestionOutput = {
   questionId: string;
 };
 
-export type ListUserQuestionsInput = {
-  username: string;
-};
-
 export type ListUserQuestionsOutput = {
   questions: Array<any>;
+};
+
+export type PostResponseInput = {
+  questionId: string;
+  responseText: string;
+};
+
+export type PostResponseOutput = {
+  questionId: string;
+  responseId: string;
+};
+
+export type ListQuestionResponsesOutput = {
+  responses: Array<any>;
 };
