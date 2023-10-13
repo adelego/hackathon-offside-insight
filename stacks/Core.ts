@@ -80,4 +80,10 @@ export function Core({ stack }: StackContext) {
     startingPosition: StartingPosition.LATEST,
     batchSize: 1,
   });
+
+  fanout.bind([bus]);
+
+  bus.subscribe('response.updated', {
+    handler: "packages/functions/src/onResponseUpdated.handler",
+  })
 }
