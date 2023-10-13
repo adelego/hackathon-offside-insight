@@ -10,12 +10,18 @@ import {
 import { BillingMode } from "aws-cdk-lib/aws-dynamodb";
 import { StartingPosition } from "aws-cdk-lib/aws-lambda";
 
-import { HostedZone } from 'aws-cdk-lib/aws-route53'
+import { HostedZone } from "aws-cdk-lib/aws-route53";
 
-import { CfnTemplate, EmailIdentity, Identity } from 'aws-cdk-lib/aws-ses';
+import { CfnTemplate, EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
 
-import { responseEmailHtml } from './responseEmailHtml';
-import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { responseEmailHtml } from "./responseEmailHtml";
+import {
+  Effect,
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 
 const PK = "PK";
 const SK = "SK";
@@ -70,10 +76,9 @@ export function Core({ stack }: StackContext) {
       "POST /users": "packages/functions/src/users.create",
       "POST /questions": "packages/functions/src/questions.create",
       "GET /questions/{username}": "packages/functions/src/questions.list",
-      "GET /questions/{questionId}": "packages/functions/src/questions.get",
+      "GET /question/{questionId}": "packages/functions/src/questions.get",
       "POST /responses": "packages/functions/src/responses.create",
-      "GET /responses/{questionId}":
-        "packages/functions/src/responses.listForQuestion",
+      "GET /responses/{questionId}": "packages/functions/src/responses.list",
       "POST /medias/upload-url": "packages/functions/src/medias.getUploadUrl",
     },
   });
@@ -111,51 +116,52 @@ export function Core({ stack }: StackContext) {
 
   const template = new CfnTemplate(stack, "Template", {
     template: {
-      subjectPart: 'Someone answered your question!',
+      subjectPart: "Someone answered your question!",
       htmlPart: responseEmailHtml,
-    }
+    },
   });
 
-  const onResponseUpdatedRole = new Role(stack, 'OnResponseUpdatedRole', {
+  const onResponseUpdatedRole = new Role(stack, "OnResponseUpdatedRole", {
     managedPolicies: [
       {
-        managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+        managedPolicyArn:
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
       },
       {
-        managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSESFullAccess',
+        managedPolicyArn: "arn:aws:iam::aws:policy/AmazonSESFullAccess",
       },
     ],
     inlinePolicies: {
-      'ses': new PolicyDocument({
+      ses: new PolicyDocument({
         statements: [
           new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['ses:SendTemplatedEmail'],
-            resources: ['*'],
+            actions: ["ses:SendTemplatedEmail"],
+            resources: ["*"],
           }),
           new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['dynamodb:GetItem'],
+            actions: ["dynamodb:GetItem"],
             resources: [table.tableArn],
           }),
         ],
-      })
+      }),
     },
-    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
   });
 
-  bus.subscribe('response.updated', {
+  bus.subscribe("response.updated", {
     environment: {
       TEMPLATE_NAME: template.ref,
-      FRONT_URL: site.url ?? '',
+      FRONT_URL: site.url ?? "",
     },
     handler: "packages/functions/src/onResponseUpdated.handler",
     role: onResponseUpdatedRole,
     bind: [table],
   });
 
-  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-    hostedZoneId: 'Z02701841Z0KRITFTM9EJ',
-    zoneName: 'rugby.pchol.fr',
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, "HostedZone", {
+    hostedZoneId: "Z02701841Z0KRITFTM9EJ",
+    zoneName: "rugby.pchol.fr",
   });
 }

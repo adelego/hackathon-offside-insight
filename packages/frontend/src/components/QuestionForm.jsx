@@ -22,14 +22,17 @@ export function QuestionForm() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: 'video/mp4',
+    accept: "video/mp4",
     maxFiles: 1,
   });
 
   const getUploadUrl = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/videos/upload-url`, {
-      method: "POST",
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/videos/upload-url`,
+      {
+        method: "POST",
+      }
+    );
     const { uploadUrl, fileName } = await response.json();
     return { uploadUrl, fileName };
   };
@@ -44,8 +47,7 @@ export function QuestionForm() {
     });
   };
 
-  const onQuestionChange = 
-  (event) => {
+  const onQuestionChange = (event) => {
     setQuestion(event.target.value);
   };
   const onGameChange = (event) => {
@@ -81,7 +83,7 @@ export function QuestionForm() {
             questionText: question,
             questionTimestamp: timestamp.toString(),
             matchDetails: selectedGame,
-            videoFileName
+            videoFileName,
           }),
         },
         [],
@@ -130,14 +132,20 @@ export function QuestionForm() {
             ))}
           </select>
         </div>
-        <div {...getRootProps()} className="mb-4 border-2 border-dashed border-gray-400 rounded p-6 cursor-pointer hover:bg-gray-200 transition-colors duration-300 dropzone">
+        <div
+          {...getRootProps()}
+          className="mb-4 border-2 border-dashed border-gray-400 rounded p-6 cursor-pointer hover:bg-gray-200 transition-colors duration-300 dropzone"
+        >
           <input {...getInputProps()} />
           <div className="flex items-center justify-center space-x-3 text-gray-600">
-            <span className="text-2xl" role="img" aria-label="rugby">📽️</span>
-            { isDragActive ?
-              <p>Release the video here ...</p> :
+            <span className="text-2xl" role="img" aria-label="rugby">
+              📽️
+            </span>
+            {isDragActive ? (
+              <p>Release the video here ...</p>
+            ) : (
               <p>Drop ta vidéo où y'a un doute... 🤔</p>
-            }
+            )}
           </div>
         </div>
 
