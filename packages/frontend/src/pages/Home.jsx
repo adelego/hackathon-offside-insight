@@ -47,7 +47,7 @@ export function Home() {
       setTimeout(() => {
         console.log("bye");
         window.location.href = "/help";
-      }, 3000);
+      }, 1500);
     }
   }, [loggedIn]);
 
@@ -80,7 +80,10 @@ export function Home() {
         >
           Submit
         </button>
-        <p>{loggedIn.value && "You are logged in"}</p>
+        <p>
+          {loggedIn.value &&
+            "You are logged in 🎉 Redirecting you in 3, 2, 1..."}
+        </p>
       </form>
     </div>
   );
