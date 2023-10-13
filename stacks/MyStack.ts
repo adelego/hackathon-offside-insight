@@ -1,4 +1,11 @@
-import { StackContext, Api, EventBus, StaticSite } from "sst/constructs";
+import { StackContext, Api, EventBus, StaticSite, Table } from "sst/constructs";
+import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+const PK = 'PK';
+const SK = 'SK';
+
+const GSI1_PK = 'GSI1_PK';
+const GSI1_SK = 'GSI1_SK';
 
 export function API({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -36,5 +43,29 @@ export function API({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     SiteUrl: site.url,
+  });
+
+  new Table(stack, "Table", {
+    fields: {
+      [PK]: 'string',
+      [SK]: 'string',
+      [GSI1_PK]: 'string',
+      [GSI1_SK]: 'string',
+    },
+    primaryIndex: {
+      partitionKey: PK,
+      sortKey: SK,
+    },
+    globalIndexes: {
+      GSI1: {
+        partitionKey: GSI1_PK,
+        sortKey: GSI1_SK,
+      }
+    },
+    cdk: {
+      table: {
+        billingMode: BillingMode.PAY_PER_REQUEST,
+      }
+    }
   });
 }
