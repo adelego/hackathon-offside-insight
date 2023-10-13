@@ -56,6 +56,9 @@ export function Core({ stack }: StackContext) {
         bind: [bus, table, mediaBucket],
       },
     },
+    cors: {
+      allowOrigins: ["*"],
+    },
     routes: {
       "POST /users": "packages/functions/src/users.create",
       "POST /questions": "packages/functions/src/questions.create",
