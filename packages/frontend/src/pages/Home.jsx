@@ -26,21 +26,28 @@ export function Home() {
           userEmail: email,
         }),
       });
-      const userSession = await response.json();
-      localStorage.setItem("userSession", JSON.stringify(userSession));
-      return true;
+      console.log(response);
+      if (response.status === 200) {
+        const userSession = await response.json();
+        localStorage.setItem("userSession", JSON.stringify(userSession));
+        return { error: false, loggedIn: true };
+      }
+      console.log("🤖");
+      return { error: true, loggedIn: false };
     },
     [userName, email],
-    false
+    { value: { error: false, loggedIn: false } }
   );
 
   useEffect(() => {
-    if (loggedIn.value && loggedIn.loading === false) {
+    if (loggedIn.loading === false && loggedIn.value.loggedIn === true) {
       setTimeout(() => {
         window.location.href = "/help";
       }, 1500);
     }
   }, [loggedIn]);
+
+  console.log(loggedIn);
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -72,9 +79,10 @@ export function Home() {
           Submit
         </button>
         <p>
-          {loggedIn.value &&
-            "You are logged in 🎉 Redirecting you in 3, 2, 1..."}
+          {loggedIn.value.loggedIn &&
+            "Vous êtes connecté-e 🎉 Redirection dans 3, 2, 1... 🚀"}
         </p>
+        <p>{loggedIn.value.error && "Utilise un autre nom 😇"}</p>
       </form>
     </div>
   );
