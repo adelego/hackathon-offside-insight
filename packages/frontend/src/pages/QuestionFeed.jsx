@@ -76,6 +76,12 @@ export function QuestionFeed() {
       console.log(
         `Upvoting response ${response.SK.S} by ${userSession.username}`
       );
+      fetch(
+        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/upvote`,
+        {
+          method: "POST",
+        }
+      );
       response.upvotes.N = parseInt(response.upvotes.N) + 1;
 
       setResponses([
@@ -91,6 +97,12 @@ export function QuestionFeed() {
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       console.log(
         `Downvote response ${response.SK.S} by ${userSession.username}`
+      );
+      fetch(
+        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/downvote`,
+        {
+          method: "POST",
+        }
       );
       response.downvotes.N = parseInt(response.downvotes.N) + 1;
       setResponses([
