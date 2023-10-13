@@ -68,16 +68,6 @@ export function HelpMe() {
 
       {iNeedHelp && <QuestionForm />}
       <Menu />
-      <style jsx>{`
-        @keyframes slide {
-          from {
-            transform: translateY(-100%);
-          }
-          to {
-            transform: translateY(100vh);
-          }
-        }
-      `}</style>
     </div>
   );
 }

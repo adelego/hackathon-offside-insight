@@ -53,7 +53,7 @@ export function QuestionForm() {
 
   const [newQuestion, submit] = useAsyncFn(
     async (event) => {
-      let videoFilename = null;
+      let videoFilename = undefined;
       event.preventDefault();
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       const selectedGame = GAMES.find(

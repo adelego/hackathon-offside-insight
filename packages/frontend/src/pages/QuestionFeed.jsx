@@ -112,15 +112,42 @@ export function QuestionFeed() {
       ]);
     };
   };
-
+  
   return (
     <div className="min-h-screen flex flex-col flex-top align-top bg-gray-100 p-20">
-      {!question.loading && (
-        <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-blue-600 rounded-md bg-white mb-5">
-          <p className="text-sm">🤔 {question.value.username} demande :</p>
-          <p className="self-center">{question.value.questionText}</p>
-        </div>
-      )}
+       {!question.loading && (
+                <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-blue-600 rounded-md bg-white mb-5">
+                    <p className="text-sm">🤔 {question.value.username} demande :</p>
+                    <p className="self-center">{question.value.questionText}</p>
+                    {question.value.signedUrl && (
+                        <>
+                            <h3 className="mb-2">Video</h3>
+                            <div className="video-container border border-gray-300 rounded overflow-hidden shadow-lg">
+                                <video width="320" height="240" controls autoPlay loop muted>
+                                    <source src={question.value.signedUrl} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        </>
+                    )}
+                <style jsx> {`
+                  .video-container {
+                    width: 100%;
+                    max-width: 320px;
+                    margin: 0 auto;
+                    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+                video {
+                    display: block;
+                    width: 100%;
+                    height: auto;
+                }`} 
+                </style>
+                </div>
+            )}
+      {question.loading && <p>Loading...</p>}
       {responses.map((response, key) => (
         <div
           key={key}
