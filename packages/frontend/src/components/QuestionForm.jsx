@@ -27,12 +27,9 @@ export function QuestionForm() {
   });
 
   const getUploadUrl = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/videos/upload-url`,
-      {
-        method: "POST",
-      }
-    );
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/medias/upload-url`, {
+      method: "POST",
+    });
     const { uploadUrl, fileName } = await response.json();
     return { uploadUrl, fileName };
   };

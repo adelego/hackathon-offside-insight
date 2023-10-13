@@ -1,12 +1,6 @@
-import { Menu } from "../components/Menu";
-import { QuestionForm } from "../components/QuestionForm";
 import { useState, useEffect } from "react";
 
-export function HelpMe() {
-  const [iNeedHelp, setINeedHelp] = useState(false);
-  const onClick = () => {
-    setINeedHelp(true);
-  };
+export const EmojiRain = () => {
   const [emojis, setEmojis] = useState([]);
 
   useEffect(() => {
@@ -24,9 +18,13 @@ export function HelpMe() {
 
     // Clean up emojis that are out of view
     const cleanUpEmojis = () => {
-      setEmojis((prevEmojis) => prevEmojis.filter(emoji => 
-        document.getElementById(emoji.id)?.getBoundingClientRect().top < window.innerHeight
-      ));
+      setEmojis((prevEmojis) =>
+        prevEmojis.filter(
+          (emoji) =>
+            document.getElementById(emoji.id)?.getBoundingClientRect().top <
+            window.innerHeight
+        )
+      );
     };
 
     const emojiInterval = setInterval(generateEmojis, 1000); // Generate new emoji every 0.5 second
@@ -39,7 +37,7 @@ export function HelpMe() {
   }, []);
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <>
       {emojis.map(({ id, left, animationDuration, fontSize }) => (
         <span
           key={id}
@@ -47,27 +45,16 @@ export function HelpMe() {
           className="absolute animate-spin"
           style={{
             left: `${left}vw`,
-            top: '-10vh',
+            top: "-10vh",
             fontSize: `${fontSize}px`,
             animationDuration: `${animationDuration}s`,
-            animationName: 'slide',
-            animationTimingFunction: 'linear',
+            animationName: "slide",
+            animationTimingFunction: "linear",
           }}
         >
           🏉
         </span>
       ))}
-      {!iNeedHelp && (
-        <button
-          className="p-4 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={onClick}
-        >
-          Help me 🙀🙀🙀🙀
-        </button>
-      )}
-
-      {iNeedHelp && <QuestionForm />}
-      <Menu />
       <style jsx>{`
         @keyframes slide {
           from {
@@ -78,6 +65,6 @@ export function HelpMe() {
           }
         }
       `}</style>
-    </div>
+    </>
   );
-}
+};

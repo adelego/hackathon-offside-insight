@@ -1,5 +1,9 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { PostMediaInput } from "@hackathon-rugby-is-easy/core/types";
 import { ApiHandler } from "sst/node/api";
 import { Bucket } from "sst/node/bucket";
@@ -16,7 +20,7 @@ export const getUploadUrl = ApiHandler(async (_evt) => {
   const fileName = `${mediaId}.mp4`;
 
   try {
-    const command = new GetObjectCommand({
+    const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileName,
     });
