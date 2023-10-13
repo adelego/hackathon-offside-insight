@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAsyncFn } from "../hooks/useAsyncFn";
 
 const GAMES = [
@@ -20,32 +20,45 @@ export function QuestionForm() {
     setGame(event.target.value);
   };
 
-  const [newQuestion, submit] = useAsyncFn(async (event) => {
-    event.preventDefault();
-    const userSession = JSON.parse(localStorage.getItem("userSession"));
-    const selectedGame = GAMES.find(
-      (upcomingGame) => upcomingGame.id === gameId
-    );
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/questions`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+  const [newQuestion, submit] = useAsyncFn(
+    async (event) => {
+      event.preventDefault();
+      const userSession = JSON.parse(localStorage.getItem("userSession"));
+      const selectedGame = GAMES.find(
+        (upcomingGame) => upcomingGame.id === gameId
+      );
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/questions`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        method: "POST",
-        body: JSON.stringify({
-          username: userSession.username,
-          questionText: question,
-          questionTimestamp: timestamp.toString(),
-          matchDetails: selectedGame,
-        }),
-      },
-      [],
-      ""
-    );
-    return true;
-  });
+          method: "POST",
+          body: JSON.stringify({
+            username: userSession.username,
+            questionText: question,
+            questionTimestamp: timestamp.toString(),
+            matchDetails: selectedGame,
+          }),
+        },
+        [],
+        ""
+      );
+      const questionResponse = await response.json();
+      return questionResponse.questionId;
+    },
+    [question, gameId, timestamp],
+    ""
+  );
+
+  useEffect(() => {
+    if (newQuestion.value !== "" && newQuestion.loading === false) {
+      setTimeout(() => {
+        window.location.href = `/questions/${newQuestion.value}`;
+      }, 1500);
+    }
+  }, [newQuestion]);
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -75,20 +88,18 @@ export function QuestionForm() {
             ))}
           </select>
         </div>
-        {/* <div className="mb-4">
-          <label className="block mb-2 text-gray-700">Timestamp</label>
-          <input
-            className="w-full p-2 border rounded"
-            type="text"
-            placeholder="timestamp ?"
-          />
-        </div> */}
         <button
           className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={submit}
         >
           Submit
         </button>
+
+        <p>
+          {newQuestion.value !== "" &&
+            newQuestion.value !== undefined &&
+            "La question a été enregistrée. Redirection dans 3, 2, 1 🚀"}
+        </p>
       </form>
     </div>
   );

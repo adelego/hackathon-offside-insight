@@ -1,12 +1,7 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Route,
-  Link,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { HelpMe } from "./pages/HelpMe";
-import { QuestionForm } from "./components/QuestionForm";
+import { QuestionFeed } from "./pages/QuestionFeed";
 
 export const router = createBrowserRouter([
   {
@@ -20,5 +15,9 @@ export const router = createBrowserRouter([
   {
     path: "about",
     element: <div>About</div>,
+  },
+  {
+    path: "questions/:id",
+    element: <QuestionFeed />,
   },
 ]);

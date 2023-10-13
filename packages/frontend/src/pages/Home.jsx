@@ -35,7 +35,6 @@ export function Home() {
   );
 
   useEffect(() => {
-    console.log({ loggedIn });
     if (loggedIn.value && loggedIn.loading === false) {
       setTimeout(() => {
         window.location.href = "/help";
