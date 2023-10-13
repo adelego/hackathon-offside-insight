@@ -71,7 +71,7 @@ export const leaderboard = ApiHandler(async (_evt) => {
     users: users.map((user) => ({
       username: user.SK.S ?? '',
       score: +(user.score.N ?? '0'),
-    })),
+    })).sort((a, b) => b.score - a.score),
   }
 
   return {

@@ -6,12 +6,12 @@ export function Menu() {
       {isOpen && (
         <div className="bg-white shadow-lg rounded-md p-4">
           <button className="flex items-center mb-2">
-            <span className="mr-2">❓</span> My Qs
+            <span className="mr-2">❓</span> My Questions
           </button>
           <button className="flex items-center mb-2">
-            <span className="mr-2">👀</span> All Qs
+            <span className="mr-2">👀</span> All Questions
           </button>
-          <button className="flex items-center">
+          <button className="flex items-center" onClick={() => { window.location.href = '/leaderboard'}}>
             <span className="mr-2">🏆</span> Leaderboard
           </button>
         </div>

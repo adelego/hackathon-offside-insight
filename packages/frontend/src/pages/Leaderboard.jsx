@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useAsync } from "../hooks/useAsync";
+import { Menu } from '../components/Menu';
 
 export function Leaderboard() {
   const leaderboard = useAsync(async () => {
@@ -18,16 +19,27 @@ export function Leaderboard() {
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 flex-col">
-      <h1>Leaderboard</h1>
-      <div className="flex flex-col items-center">
+      <Menu />
+      <h1
+        className="text-4xl font-bold text-center mb-4"
+      >Leaderboard</h1>
+      <div className="flex flex-col gap-2">
+      <div className="flex w-1/2 gap-4 justify-between full-width">
+            <div
+              className="bg-gray-200 flex justify-center items-center p-2 rounded full-width"
+            >Username</div>
+            <div
+              className="bg-gray-200 flex justify-center items-center p-2 rounded full-width"
+            >Score</div>
+          </div>
       {
-        leaderboard.loading === false && leaderboard.value.map(({ username, score }) => (
-          <div className="flex justify-between w-1/2 gap-4">
+        leaderboard.loading === false && leaderboard.value.map(({ username, score }, i) => (
+          <div className="flex justify-between gap-4 full-width">
             <div
-              className="bg-gray-400 flex justify-center items-center p-2 border-r"
-            >{username}</div>
+              className="bg-gray-200 flex justify-center items-center p-2 full-width"
+            >{i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : ''}{username}</div>
             <div
-              className="bg-gray-400 flex justify-center items-center p-2 rounded-l"
+              className="bg-gray-200 flex justify-center items-center p-2 full-width"
             >{score}</div>
           </div>
         ))
