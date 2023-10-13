@@ -4,6 +4,10 @@ export const EmojiRain = () => {
   const [emojis, setEmojis] = useState([]);
 
   useEffect(() => {
+    if (document.visibilityState !== 'visible') { 
+      return 
+    }
+
     // Add a list of emojis from which to randomly select
     const emojiList = ["🏉", "🤌", "🍻"];
 
@@ -50,7 +54,7 @@ export const EmojiRain = () => {
 
 
     const emojiInterval = setInterval(generateEmojis, 1000); // Generate new emoji every 0.5 second
-    const cleanUpInterval = setInterval(cleanUpEmojis, 4000); // Clean up emojis every 2 seconds
+    const cleanUpInterval = setInterval(cleanUpEmojis, 2000); // Clean up emojis every 2 seconds
 
     return () => {
       clearInterval(emojiInterval); // Cleanup interval on component unmount
@@ -67,7 +71,7 @@ export const EmojiRain = () => {
           className="absolute animate-spin"
           style={{
             left: `${left}vw`,
-            top: "-10vh",
+            top: "0vh",
             fontSize: `${fontSize}px`,
             animationDuration: `${animationDuration}s`,
             animationName: "slide",
