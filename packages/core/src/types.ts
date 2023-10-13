@@ -42,3 +42,7 @@ export type PostResponseOutput = {
 export type ListQuestionResponsesOutput = {
   responses: Array<any>;
 };
+
+export type PostMediaInput = {
+  mediaType: string;
+};
