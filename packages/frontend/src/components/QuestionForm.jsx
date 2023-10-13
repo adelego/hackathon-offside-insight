@@ -13,8 +13,10 @@ export function QuestionForm() {
         <div className="mb-4">
           <label className="block mb-2 text-gray-700">Match concerné</label>
           <select className="w-full p-2 border rounded">
-            <option>Country 1 vs Country 2</option>
-            {/* Add other matches as needed */}
+            <option>🇫🇷 vs 🇿🇦</option>
+            <option>🇳🇿 vs 🇮🇪</option>
+            <option>🏴󠁧󠁢󠁥󠁮󠁧󠁿 vs 🇫🇯</option>
+            <option>🏴󠁧󠁢󠁷󠁬󠁳󠁿 vs 🇦🇷</option>
           </select>
         </div>
         <div className="mb-4">
