@@ -60,6 +60,7 @@ export function Core({ stack }: StackContext) {
       "POST /users": "packages/functions/src/users.create",
       "POST /questions": "packages/functions/src/questions.create",
       "GET /questions/{username}": "packages/functions/src/questions.list",
+      "GET /question/{questionId}": "packages/functions/src/questions.get",
       "POST /responses": "packages/functions/src/responses.create",
       "GET /responses/{questionId}":
         "packages/functions/src/responses.listForQuestion",

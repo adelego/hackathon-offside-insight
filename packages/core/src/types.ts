@@ -39,6 +39,17 @@ export type PostResponseOutput = {
   responseId: string;
 };
 
+export type GetQuestionOutput = {
+  questionId: string;
+  questionText: string;
+  matchDetails: {
+    team1: string;
+    team2: string;
+    date: string;
+  };
+  questionTimestamp?: string;
+};
+
 export type ListQuestionResponsesOutput = {
   responses: Array<any>;
 };

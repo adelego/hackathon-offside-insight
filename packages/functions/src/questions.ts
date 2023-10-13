@@ -4,6 +4,7 @@ import {
   UserEntity,
 } from "@hackathon-rugby-is-easy/core/entities";
 import {
+  GetQuestionOutput,
   ListUserQuestionsOutput,
   PostQuestionInput,
   PostQuestionOutput,
@@ -44,6 +45,28 @@ export const create = ApiHandler(async (_evt) => {
   }
 
   const reponse: PostQuestionOutput = createdQuestion;
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(reponse),
+  };
+});
+
+export const get = ApiHandler(async (_evt) => {
+  const { questionId } = _evt.pathParameters as { questionId: string };
+
+  const { Item: question } = await QuestionEntity.build(GetItemCommand)
+    .key({ questionId })
+    .send();
+
+  if (question === undefined) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify(`Question ${questionId} not found`),
+    };
+  }
+
+  const reponse: GetQuestionOutput = question;
 
   return {
     statusCode: 200,
