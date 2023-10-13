@@ -18,6 +18,7 @@ export type PostQuestionInput = {
     date: string;
   };
   questionTimestamp?: string;
+  videoFilename?: string;
 };
 
 export type PostQuestionOutput = {
@@ -54,6 +55,4 @@ export type ListQuestionResponsesOutput = {
   responses: Array<any>;
 };
 
-export type PostMediaInput = {
-  mediaType: string;
-};
+export type PostMediaInput = {};

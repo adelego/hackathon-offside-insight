@@ -10,11 +10,10 @@ const bucketName = Bucket.MediaBucket.bucketName;
 
 export const getUploadUrl = ApiHandler(async (_evt) => {
   const stringBody = _evt.body as string;
-  const { mediaType } = JSON.parse(stringBody) as PostMediaInput;
 
   const mediaId = randomUUID();
 
-  const fileName = `${mediaId}.${mediaType}`;
+  const fileName = `${mediaId}.mp4`;
 
   try {
     const command = new GetObjectCommand({

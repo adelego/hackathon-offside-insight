@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import { useAsyncFn } from "../hooks/useAsyncFn";
 
 const GAMES = [
@@ -12,8 +13,39 @@ export function QuestionForm() {
   const [question, setQuestion] = useState("");
   const [gameId, setGame] = useState(1);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const [videoFile, setVideoFile] = useState(null);
 
-  const onQuestionChange = (event) => {
+  // Drag and Drop Handlers
+  const onDrop = useCallback((acceptedFiles) => {
+    setVideoFile(acceptedFiles[0]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: 'video/mp4',
+    maxFiles: 1,
+  });
+
+  const getUploadUrl = async () => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/videos/upload-url`, {
+      method: "POST",
+    });
+    const { uploadUrl, fileName } = await response.json();
+    return { uploadUrl, fileName };
+  };
+
+  const uploadVideoToS3 = async (file, uploadUrl) => {
+    await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+  };
+
+  const onQuestionChange = 
+  (event) => {
     setQuestion(event.target.value);
   };
   const onGameChange = (event) => {
@@ -22,11 +54,20 @@ export function QuestionForm() {
 
   const [newQuestion, submit] = useAsyncFn(
     async (event) => {
+      let videoFileName = null;
       event.preventDefault();
       const userSession = JSON.parse(localStorage.getItem("userSession"));
       const selectedGame = GAMES.find(
         (upcomingGame) => upcomingGame.id === gameId
       );
+
+      if (videoFile) {
+        const { uploadUrl, fileName } = await getUploadUrl();
+        await uploadVideoToS3(videoFile, uploadUrl);
+        videoFileName = fileName;
+        // Add additional logic if you need to associate the video with the question
+      }
+
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/questions`,
         {
@@ -40,6 +81,7 @@ export function QuestionForm() {
             questionText: question,
             questionTimestamp: timestamp.toString(),
             matchDetails: selectedGame,
+            videoFileName
           }),
         },
         [],
@@ -48,7 +90,7 @@ export function QuestionForm() {
       const questionResponse = await response.json();
       return questionResponse.questionId;
     },
-    [question, gameId, timestamp],
+    [question, gameId, timestamp, videoFile],
     ""
   );
 
@@ -88,6 +130,19 @@ export function QuestionForm() {
             ))}
           </select>
         </div>
+        <div {...getRootProps()} className="mb-4 border-2 border-dashed border-gray-400 rounded p-6 cursor-pointer hover:bg-gray-200 transition-colors duration-300 dropzone">
+          <input {...getInputProps()} />
+          <div className="flex items-center justify-center space-x-3 text-gray-600">
+            <span className="text-2xl" role="img" aria-label="rugby">📽️</span>
+            { isDragActive ?
+              <p>Release the video here ...</p> :
+              <p>Drop ta vidéo où y'a un doute... 🤔</p>
+            }
+          </div>
+        </div>
+
+        {videoFile && <p className="mb-4">Selected video: {videoFile.name}</p>}
+
         <button
           className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={submit}

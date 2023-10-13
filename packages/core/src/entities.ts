@@ -1,6 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { EntityV2, boolean, map, number, schema, string } from "dynamodb-toolbox";
+import {
+  EntityV2,
+  boolean,
+  map,
+  number,
+  schema,
+  string,
+} from "dynamodb-toolbox";
 
 import { TableV2 } from "dynamodb-toolbox";
 import { Table } from "sst/node/table";
@@ -48,6 +55,7 @@ export const QuestionEntity = new EntityV2({
       date: string().required(),
     }).required(),
     notified: boolean().required(),
+    videoFilename: string().optional(),
   }),
 });
 
