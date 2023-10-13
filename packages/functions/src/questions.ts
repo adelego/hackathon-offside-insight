@@ -27,7 +27,7 @@ export const create = ApiHandler(async (_evt) => {
   const questionId = randomUUID();
 
   const createdQuestion = {
-    username,
+    ...postUserInput,
     questionId,
   };
 
@@ -37,10 +37,12 @@ export const create = ApiHandler(async (_evt) => {
     throw e;
   }
 
-  console.log(createdQuestion);
-
   return {
     statusCode: 200,
     body: JSON.stringify(createdQuestion),
   };
+});
+
+export const list = ApiHandler(async (_evt) => {
+  const stringBody = _evt.body as string;
 });
