@@ -1,5 +1,6 @@
-import { StackContext, Api, EventBus, StaticSite, Table } from "sst/constructs";
+import { StackContext, Api, EventBus, StaticSite, Table, Function } from "sst/constructs";
 import { BillingMode } from "aws-cdk-lib/aws-dynamodb";
+import { StartingPosition } from "aws-cdk-lib/aws-lambda";
 
 const PK = "PK";
 const SK = "SK";
@@ -36,6 +37,7 @@ export function Core({ stack }: StackContext) {
         billingMode: BillingMode.PAY_PER_REQUEST,
       },
     },
+    stream: 'new_and_old_images',
   });
 
   const api = new Api(stack, "api", {
@@ -62,5 +64,20 @@ export function Core({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     SiteUrl: site.url,
+  });
+
+  const fanout = new Function(stack, "Fanout", {
+    handler: "packages/functions/src/fanout.handler",
+    environment: {
+      TABLE_NAME: table.tableName,
+     },
+  });
+
+  table.cdk.table.grantStreamRead(fanout);
+
+  fanout.addEventSourceMapping("EventSourceMapping", {
+    eventSourceArn: table.cdk.table.tableStreamArn,
+    startingPosition: StartingPosition.LATEST,
+    batchSize: 1,
   });
 }
