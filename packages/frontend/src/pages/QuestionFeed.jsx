@@ -9,7 +9,6 @@ export function QuestionFeed() {
   const [responses, setResponses] = useState([]);
 
   const question = useAsync(async () => {
-    console.log("fetching");
     const questionResponse = await fetch(
       `${process.env.REACT_APP_API_URL}/question/${id}`,
       {
@@ -24,7 +23,6 @@ export function QuestionFeed() {
   }, []);
 
   useAsync(async () => {
-    console.log("fetching");
     const responsesResponse = await fetch(
       `${process.env.REACT_APP_API_URL}/responses/${id}`,
       {
@@ -70,20 +68,78 @@ export function QuestionFeed() {
     [myAnswer, responses],
     ""
   );
-  console.log(responses);
+
+  const getUpvoteFn = (response, responseKey) => {
+    return (event) => {
+      event.preventDefault();
+      const userSession = JSON.parse(localStorage.getItem("userSession"));
+      console.log(
+        `Upvoting response ${response.SK.S} by ${userSession.username}`
+      );
+      fetch(
+        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/upvote`,
+        {
+          method: "POST",
+        }
+      );
+      response.upvotes.N = parseInt(response.upvotes.N) + 1;
+
+      setResponses([
+        ...responses.slice(0, responseKey),
+        response,
+        ...responses.slice(responseKey + 1, responses.length),
+      ]);
+    };
+  };
+  const getDownvoteFn = (response, responseKey) => {
+    return (event) => {
+      event.preventDefault();
+      const userSession = JSON.parse(localStorage.getItem("userSession"));
+      console.log(
+        `Downvote response ${response.SK.S} by ${userSession.username}`
+      );
+      fetch(
+        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/downvote`,
+        {
+          method: "POST",
+        }
+      );
+      response.downvotes.N = parseInt(response.downvotes.N) + 1;
+      setResponses([
+        ...responses.slice(0, responseKey),
+        response,
+        ...responses.slice(responseKey + 1, responses.length),
+      ]);
+    };
+  };
 
   return (
     <div className="min-h-screen flex flex-col flex-top align-top bg-gray-100 p-20">
-      <div className="w-300px h-max p-10 border-solid border-2 border-blue-600 rounded-md bg-white mb-5">
-        <p>
-          {question.loading || question.value === undefined
-            ? "ta question ?"
-            : question.value.questionText}
-        </p>
-      </div>
-      {responses.map((response) => (
-        <div className="w-300px h-max p-10 border-solid border-2 border-blue-600 rounded-md bg-white mb-5">
-          {response.responseText.S || response.responseText}
+      {!question.loading && (
+        <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-blue-600 rounded-md bg-white mb-5">
+          <p className="text-sm">🤔 {question.value.username} demande :</p>
+          <p className="self-center">{question.value.questionText}</p>
+        </div>
+      )}
+      {responses.map((response, key) => (
+        <div
+          key={key}
+          className="flex flex-col w-300px h-max p-10 border-solid border-2 border-blue-400 rounded-md bg-white mb-5"
+        >
+          <p className="text-sm">
+            💁 {response.username || "anonyme"} répond :
+          </p>
+          <p className="self-center">
+            {response.responseText.S || response.responseText}
+          </p>
+          <div className="self-end">
+            <button onClick={getUpvoteFn(response, key)}>
+              {response.upvotes.N || 0}👍
+            </button>{" "}
+            <button onClick={getDownvoteFn(response, key)}>
+              {response.downvotes.N || 0} 👎
+            </button>
+          </div>
         </div>
       ))}
       <form>
