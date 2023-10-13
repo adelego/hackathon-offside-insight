@@ -7,6 +7,6 @@ export const event = createEventBuilder({
 
 export const Events = {
   ResponseUpdated: event("response.updated", {
-    id: z.string(),
+    responseId: z.string(),
   }),
 };

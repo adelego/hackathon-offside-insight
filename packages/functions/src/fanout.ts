@@ -18,16 +18,16 @@ export const handler = async ({ Records }: {
   await Promise.all(Records.map(async (record) => {
     const { eventName, dynamodb } = record;
 
-    if (eventName !== 'INSERT') {
+    if (eventName !== 'MODIFY' && eventName !== 'INSERT') {
       return;
     }
 
     const { NewImage } = dynamodb;
 
     switch (NewImage.PK.S) {
-      case 'RESPONSE': {
+      case 'Response': {
         await Events.ResponseUpdated.publish({
-          id: NewImage.SK.S,
+          responseId: NewImage.SK.S,
         });
         break;
       }

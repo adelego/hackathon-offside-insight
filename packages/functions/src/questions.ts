@@ -35,6 +35,7 @@ export const create = ApiHandler(async (_evt) => {
 
   const createdQuestion = {
     ...postUserInput,
+    notified: false,
     questionId,
   };
 

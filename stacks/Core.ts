@@ -10,6 +10,13 @@ import {
 import { BillingMode } from "aws-cdk-lib/aws-dynamodb";
 import { StartingPosition } from "aws-cdk-lib/aws-lambda";
 
+import { HostedZone } from 'aws-cdk-lib/aws-route53'
+
+import { CfnTemplate, EmailIdentity, Identity } from 'aws-cdk-lib/aws-ses';
+
+import { responseEmailHtml } from './responseEmailHtml';
+import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+
 const PK = "PK";
 const SK = "SK";
 
@@ -102,7 +109,53 @@ export function Core({ stack }: StackContext) {
 
   fanout.bind([bus]);
 
-  bus.subscribe("response.updated", {
+  const template = new CfnTemplate(stack, "Template", {
+    template: {
+      subjectPart: 'Someone answered your question!',
+      htmlPart: responseEmailHtml,
+    }
+  });
+
+  const onResponseUpdatedRole = new Role(stack, 'OnResponseUpdatedRole', {
+    managedPolicies: [
+      {
+        managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+      },
+      {
+        managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSESFullAccess',
+      },
+    ],
+    inlinePolicies: {
+      'ses': new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['ses:SendTemplatedEmail'],
+            resources: ['*'],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['dynamodb:GetItem'],
+            resources: [table.tableArn],
+          }),
+        ],
+      })
+    },
+    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+  });
+
+  bus.subscribe('response.updated', {
+    environment: {
+      TEMPLATE_NAME: template.ref,
+      FRONT_URL: site.url ?? '',
+    },
     handler: "packages/functions/src/onResponseUpdated.handler",
+    role: onResponseUpdatedRole,
+    bind: [table],
+  });
+
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+    hostedZoneId: 'Z02701841Z0KRITFTM9EJ',
+    zoneName: 'rugby.pchol.fr',
   });
 }
