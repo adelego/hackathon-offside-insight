@@ -27,6 +27,7 @@ export const UserEntity = new EntityV2({
   schema: schema({
     PK: string().key().default("User"),
     userId: string().key().savedAs("SK"),
+    sessionId: string().required(),
     username: string().required(),
     userEmail: string().optional(),
   }),
