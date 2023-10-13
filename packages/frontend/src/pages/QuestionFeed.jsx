@@ -72,17 +72,18 @@ export function QuestionFeed() {
   const getUpvoteFn = (response, responseKey) => {
     return (event) => {
       event.preventDefault();
+      const id = (response.SF && response.SK.S) || response.responseId;
+
       const userSession = JSON.parse(localStorage.getItem("userSession"));
-      console.log(
-        `Upvoting response ${response.SK.S} by ${userSession.username}`
-      );
-      fetch(
-        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/upvote`,
-        {
-          method: "POST",
-        }
-      );
-      response.upvotes.N = parseInt(response.upvotes.N) + 1;
+      console.log(`Upvoting response ${id} by ${userSession.username}`);
+      fetch(`${process.env.REACT_APP_API_URL}/responses/${id}/upvote`, {
+        method: "POST",
+      });
+      if (response.upvotes !== undefined && response.upvotes.N !== undefined) {
+        response.upvotes.N = parseInt(response.upvotes.N) + 1;
+      } else {
+        response.upvotes = parseInt(response.upvotes) + 1;
+      }
 
       setResponses([
         ...responses.slice(0, responseKey),
@@ -94,17 +95,20 @@ export function QuestionFeed() {
   const getDownvoteFn = (response, responseKey) => {
     return (event) => {
       event.preventDefault();
+      const id = (response.SF && response.SK.S) || response.responseId;
       const userSession = JSON.parse(localStorage.getItem("userSession"));
-      console.log(
-        `Downvote response ${response.SK.S} by ${userSession.username}`
-      );
-      fetch(
-        `${process.env.REACT_APP_API_URL}/responses/${response.SK.S}/downvote`,
-        {
-          method: "POST",
-        }
-      );
-      response.downvotes.N = parseInt(response.downvotes.N) + 1;
+      console.log(`Downvote response ${id} by ${userSession.username}`);
+      fetch(`${process.env.REACT_APP_API_URL}/responses/${id}/downvote`, {
+        method: "POST",
+      });
+      if (
+        response.downvotes !== undefined &&
+        response.downvotes.N !== undefined
+      ) {
+        response.downvotes.N = parseInt(response.downvotes.N) + 1;
+      } else {
+        response.downvotes = parseInt(response.downvotes) + 1;
+      }
       setResponses([
         ...responses.slice(0, responseKey),
         response,
@@ -127,17 +131,19 @@ export function QuestionFeed() {
           className="flex flex-col w-300px h-max p-10 border-solid border-2 border-blue-400 rounded-md bg-white mb-5"
         >
           <p className="text-sm">
-            💁 {response.username || "anonyme"} répond :
+            💁 {(response.username && response.username.S) || "anonyme"} répond
+            :
           </p>
           <p className="self-center">
-            {response.responseText.S || response.responseText}
+            {(response.responseText && response.responseText.S) ||
+              response.responseText}
           </p>
           <div className="self-end">
             <button onClick={getUpvoteFn(response, key)}>
-              {response.upvotes.N || 0}👍
+              {(response.upvotes && response.upvotes.N) || 0}👍
             </button>{" "}
             <button onClick={getDownvoteFn(response, key)}>
-              {response.downvotes.N || 0} 👎
+              {(response.downvotes && response.downvotes.N) || 0} 👎
             </button>
           </div>
         </div>
