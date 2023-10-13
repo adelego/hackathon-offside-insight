@@ -74,16 +74,20 @@ export function QuestionFeed() {
 
   return (
     <div className="min-h-screen flex flex-col flex-top align-top bg-gray-100 p-20">
-      <div className="w-300px h-max p-10 border-solid border-2 border-blue-600 rounded-md bg-white mb-5">
-        <p>
-          {question.loading || question.value === undefined
-            ? "ta question ?"
-            : question.value.questionText}
-        </p>
-      </div>
+      {!question.loading && (
+        <div className="flex flex-col w-300px h-max p-10 border-solid border-4 border-blue-600 rounded-md bg-white mb-5">
+          <p className="text-sm">🤔 {question.value.username} demande :</p>
+          <p className="self-center">{question.value.questionText}</p>
+        </div>
+      )}
       {responses.map((response) => (
-        <div className="w-300px h-max p-10 border-solid border-2 border-blue-600 rounded-md bg-white mb-5">
-          {response.responseText.S || response.responseText}
+        <div className="flex flex-col w-300px h-max p-10 border-solid border-2 border-blue-400 rounded-md bg-white mb-5">
+          <p className="text-sm">
+            💁 {response.username || "anonyme"} répond :
+          </p>
+          <p className="self-center">
+            {response.responseText.S || response.responseText}
+          </p>
         </div>
       ))}
       <form>
